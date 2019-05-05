@@ -1,6 +1,6 @@
 ## letsencrypt-autorenewal-docker
 
-Available on dockerhub [here]( https://hub.docker.com/r/ebarault/letsencrypt-autorenew-docker).
+Available on dockerhub [here]( https://hub.docker.com/r/pschichtel/letsencrypt-autorenew).
 
 This image runs [`certbot`](https://certbot.eff.org/) under the hood to automate issuance and renewal of letsencrypt certificates.
 
