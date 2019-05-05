@@ -1,17 +1,14 @@
-FROM certbot/certbot:v0.31.0
-MAINTAINER Eric Barault (@ebarault)
-
-VOLUME /certs
-VOLUME /etc/letsencrypt
-EXPOSE 443
-
-RUN apk update && \
-	apk add openssl curl
+FROM certbot/certbot:v0.33.1
+MAINTAINER Phillip Schichtel
 
 ADD crontab /etc/crontabs
 RUN crontab /etc/crontabs/crontab
 
 COPY ./scripts/ /scripts
 RUN chmod -R +x /scripts/
+
+VOLUME /certs
+VOLUME /etc/letsencrypt
+EXPOSE 443
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
