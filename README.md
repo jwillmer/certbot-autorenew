@@ -21,7 +21,7 @@ Issued certificates are made available in the container's `/certs` directory whi
 #### Build or fetch the docker image
 
 - Either build image with provided docker file
-- -or- fetch the image from dockerhub located at [`ebarault/letsencrypt-autorenew-docker`](https://hub.docker.com/r/ebarault/letsencrypt-autorenew-docker/tags/)
+- -or- fetch the image from dockerhub located at [`ebarault/letsencrypt-autorenew-docker`](https://hub.docker.com/r/pschichtel/letsencrypt-autorenew-docker/tags/)
 
 #### Ports
 The software in the docker container exposes internally the `443` port, which you should expose back on the docker host with no translation, such as in `"443:443"`
