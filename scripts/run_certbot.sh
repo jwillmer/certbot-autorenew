@@ -3,7 +3,7 @@
 # boostrapped from https://github.com/janeczku/haproxy-acme-validation-plugin/blob/master/cert-renewal-haproxy.sh
 
 self_proc=$PPID
-if ! $self_proc
+if [ $self_proc == 0 ]
 then
     $self = 1
 fi
