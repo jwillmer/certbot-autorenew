@@ -1,6 +1,9 @@
 FROM certbot/certbot:v0.37.1
 MAINTAINER Phillip Schichtel
 
+RUN apk update \
+ && apk add docker-cli
+
 ADD crontab /etc/crontabs
 RUN crontab /etc/crontabs/crontab
 
