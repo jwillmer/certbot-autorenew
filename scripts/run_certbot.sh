@@ -2,12 +2,18 @@
 
 # boostrapped from https://github.com/janeczku/haproxy-acme-validation-plugin/blob/master/cert-renewal-haproxy.sh
 
+self_proc=$PPID
+if ! $self_proc
+then
+    $self = 1
+fi
+
 logger_error() {
-    >&2 echo "[error] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
+    >&2 echo "[error] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
 }
 
 logger_info() {
-    echo "[info] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
+    echo "[info] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
 }
 
 issueCertificate() {
