@@ -84,7 +84,7 @@ processCertificates() {
           if [[ -x /scripts/post-hook.sh ]]
           then
             logger_info "Running post-hook"
-            /scripts/ppost-hook.sh "${domains}"
+            /scripts/post-hook.sh "${domains}"
           fi
         fi
 
