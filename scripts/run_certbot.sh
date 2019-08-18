@@ -68,6 +68,11 @@ processCertificates() {
 
         # renewing certificate
         logger_info "Renewing certificate for $domains"
+        if [[ -x /scripts/pre-hook.sh ]]
+        then
+          logger_info "Running pre-hook"
+          /scripts/pre-hook.sh "${domains}"
+        fi
         issueCertificate "${domains}"
 
         if [ $? -ne 0 ]; then
@@ -76,6 +81,11 @@ processCertificates() {
         else
           logger_info "Renewed certificate for ${subject}"
           copyCertificate
+          if [[ -x /scripts/post-hook.sh ]]
+          then
+            logger_info "Running post-hook"
+            /scripts/ppost-hook.sh "${domains}"
+          fi
         fi
 
       else
