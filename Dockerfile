@@ -1,5 +1,6 @@
-FROM certbot/certbot:v0.37.1
-MAINTAINER Phillip Schichtel
+FROM certbot/certbot:v1.7.0
+
+LABEL maintainer="Phillip Schichtel <phillip@schich.tel>"
 
 RUN apk update \
  && apk add docker-cli
