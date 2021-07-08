@@ -2,6 +2,12 @@
 
 # boostrapped from https://github.com/janeczku/haproxy-acme-validation-plugin/blob/master/cert-renewal-haproxy.sh
 
+self_proc=$PPID
+if [ $self_proc == 0 ]
+then
+    $self = 1
+fi
+
 logger_error() {
   if [ -n "${LOGFILE}" ]
   then
@@ -9,7 +15,7 @@ logger_error() {
   fi
   # make sure the job redirects directly to stdout/stderr instead of a log file
   # this works well in docker combined with a docker logging driver
-  >&2 echo "[error] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
+  >&2 echo "[error] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
 }
 
 logger_info() {
@@ -19,7 +25,7 @@ logger_info() {
   else
     # make sure the job redirects directly to stdout/stderr instead of a log file
     # this works well in docker combined with a docker logging driver
-    echo "[info] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
+    echo "[info] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
   fi
 }
 

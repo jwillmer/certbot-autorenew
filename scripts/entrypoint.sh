@@ -40,8 +40,6 @@ else
   logger_info "No HEALTH_CHECK_URL specified; skipping health check"
 fi
 
-# one-time execution at container start once host's health check is ok
-/scripts/run_certbot.sh
 if [ "$RUN_AT_START" = "true" ]
 then
     # one-time execution at container start once host's health check is ok

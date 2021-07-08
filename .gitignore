@@ -1,3 +1,4 @@
 /certs
 /letsencrypt
 /var_log_letsencrypt
+/.vs
