@@ -2,8 +2,7 @@ FROM certbot/certbot:v1.7.0
 
 LABEL maintainer="Jens Willmer <info@jwillmer.de>"
 
-RUN apk update \
- && apk add docker-cli
+RUN apk add --no-cache docker-cli curl
 
 RUN pip install certbot-dns-cloudflare
 #RUN certbot-dns-cloudxns
