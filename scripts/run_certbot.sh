@@ -2,37 +2,51 @@
 
 # boostrapped from https://github.com/janeczku/haproxy-acme-validation-plugin/blob/master/cert-renewal-haproxy.sh
 
-self_proc=$PPID
-if [ $self_proc == 0 ]
-then
-    $self = 1
-fi
-
 logger_error() {
-    >&2 echo "[error] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
+  if [ -n "${LOGFILE}" ]
+  then
+    echo "[error] ${1}" >> ${LOGFILE}
+  fi
+  # make sure the job redirects directly to stdout/stderr instead of a log file
+  # this works well in docker combined with a docker logging driver
+  >&2 echo "[error] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
 }
 
 logger_info() {
-    echo "[info] ${1}" > /proc/$self_proc/fd/1 2>/proc/$self_proc/fd/2
+  if [ -n "${LOGFILE}" ]
+  then
+    echo "[info] ${1}" >> ${LOGFILE}
+  else
+    # make sure the job redirects directly to stdout/stderr instead of a log file
+    # this works well in docker combined with a docker logging driver
+    echo "[info] ${1}" > /proc/1/fd/1 2>/proc/1/fd/2
+  fi
 }
 
 issueCertificate() {
-    certbot_response="$(certbot certonly --agree-tos --renew-by-default --non-interactive --max-log-backups 100 --email "$EMAIL" $CERTBOT_ARGS -d $1 2>&1)"
-    certbot_return_code=$?
-    logger_info "${certbot_response}"
-    return ${certbot_return_code}
+  certbot_response=`certbot certonly --agree-tos --renew-by-default --non-interactive --max-log-backups 100 --email $EMAIL $CERTBOT_ARGS -d $1 2>&1`
+  certbot_return_code=$?
+  logger_info "${certbot_response}"
+  return ${certbot_return_code}
 }
 
 copyCertificate() {
-    local d=${CERT_DOMAIN%%,*} # in case of multi-host domains, use first name only
+  local d=${CERT_DOMAIN%%,*} # in case of multi-host domains, use first name only
+  local d=$(echo "${d}" | sed "s/\(\*\.\)?*\(.*\)/\2/") # support wildcard hosts
 
-    # keep full chain and private key in separate files (e.g. for nginx and apache)
-    cp /etc/letsencrypt/live/$d/cert.pem /certs/$d.pem
-    cp /etc/letsencrypt/live/$d/privkey.pem /certs/$d.key.pem
-    cp /etc/letsencrypt/live/$d/chain.pem /certs/$d.chain.pem
-    cp /etc/letsencrypt/live/$d/fullchain.pem /certs/$d.fullchain.pem
-    cat /etc/letsencrypt/live/$d/fullchain.pem /etc/letsencrypt/live/$d/privkey.pem > /certs/$d.merged.pem
-    logger_info "Certificates for $d and copied to /certs dir"
+  # certs are copied to /certs directory
+  if [ "$CONCAT" = true ]; then
+   # concat the full chain with the private key (e.g. for haproxy)
+   cat /etc/letsencrypt/live/$d/fullchain.pem /etc/letsencrypt/live/$d/privkey.pem > /certs/$d.pem
+   logger_info "Certificates for $d concatenated and copied to /certs dir"
+  else
+   # keep full chain and private key in separate files (e.g. for nginx and apache)
+   cp /etc/letsencrypt/live/$d/cert.pem /certs/$d.pem
+   cp /etc/letsencrypt/live/$d/privkey.pem /certs/$d.key.pem
+   cp /etc/letsencrypt/live/$d/chain.pem /certs/$d.chain.pem
+   cp /etc/letsencrypt/live/$d/fullchain.pem /certs/$d.fullchain.pem
+   logger_info "Certificates for $d and copied to /certs dir"
+  fi
 }
 
 processCertificates() {
@@ -45,6 +59,7 @@ processCertificates() {
   # - CERTBOT_ARGS
 
   local d=${CERT_DOMAIN%%,*} # in case of multi-host domains, use first name only
+  local d=$(echo "${d}" | sed "s/\(\*\.\)?*\(.*\)/\2/") # support wildcard hosts
 
   if [ -d /etc/letsencrypt/live/$d ]; then
     cert_path=$(find /etc/letsencrypt/live/$d -name cert.pem -print0)
@@ -126,24 +141,25 @@ CERTBOT_ARGS=""
 # see https://certbot.eff.org/docs/using.html#standalone
 #
 if [ $WEBROOT ]; then
-    CERTBOT_ARGS=" --webroot -w $WEBROOT"
+  CERTBOT_ARGS=" --webroot -w $WEBROOT"
 else
-    CERTBOT_ARGS=" --${PLUGIN:-standalone} --preferred-challenges ${PREFERRED_CHALLENGES:-http-01} ${CUSTOM_ARGS}"
+  CERTBOT_ARGS=" --${PLUGIN:-standalone} --preferred-challenges ${PREFERRED_CHALLENGES:-http-01} ${CUSTOM_ARGS}"
 fi
 
 # activate debug mode
 if [ "$DEBUG" = true ]; then
-    CERTBOT_ARGS=$CERTBOT_ARGS" --debug"
+  CERTBOT_ARGS=$CERTBOT_ARGS" --debug"
 fi
 
 # activate staging mode where test certificates (invalid) are requested against
 # letsencrypt's staging server https://acme-staging.api.letsencrypt.org/directory.
 # This is useful for testing purposes without being rate limited by letsencrypt
 if [ "$STAGING" = true ]; then
-    CERTBOT_ARGS=$CERTBOT_ARGS" --staging"
+  CERTBOT_ARGS=$CERTBOT_ARGS" --staging"
 fi
 
-logger_info "$(date +"%D %T"): Checking certificates for domains $DOMAINS"
+NOW=$(date +"%D %T")
+logger_info "$NOW: Checking certificates for domains $DOMAINS"
 
 ##
 # extract certificate domains and run main routine on each
