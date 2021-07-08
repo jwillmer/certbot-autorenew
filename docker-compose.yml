@@ -1,22 +1,22 @@
 version: '2'
 
 services:
+
+  # cloudflare configuration
   certbot:
     build: .
     container_name: certbot
-    ports:
-      - "443:443"
     volumes:
-      - ./certs:/certs
-      - ./letsencrypt:/etc/letsencrypt
-      - ./var_log_letsencrypt:/var/log/letsencrypt
-    restart: always
+      - ~/certificates:/certs
+      - ~/certbot/logs:/var/log/letsencrypt
+      - ~/certbot/cloudflare.ini:/root/cloudflare.ini:ro
     environment:
-      # - WEBROOT=/path/to/web_root
-      # - LOGFILE=/var/log/letsencrypt/certrenewal.log
-      - DEBUG=false
+      - LOGFILE=/var/log/letsencrypt/certrenewal.log
+      - PLUGIN=dns-cloudflare
+      - PREFERRED_CHALLENGES=dns-01
+      - CUSTOM_ARGS=--no-eff-email --dns-cloudflare-credentials /root/cloudflare.ini
+      - RUN_AT_START=true
+      - DOMAINS=*.test.example.com
+      - EMAIL=info@example.com
+      - DEBUG=true
       - STAGING=true
-      - DOMAINS=my.domain.com
-      - EMAIL=user@my.domain.com
-      - CONCAT=false
-      - HEALTH_CHECK_URL=my.domain.com:80
