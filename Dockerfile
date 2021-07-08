@@ -4,20 +4,21 @@ LABEL maintainer="Jens Willmer <info@jwillmer.de>"
 
 RUN apk add --no-cache docker-cli curl
 
+# Supported Plugins
 RUN pip install certbot-dns-cloudflare
-#RUN certbot-dns-cloudxns
-#RUN certbot-dns-digitalocean
-#RUN certbot-dns-dnsimple
-#RUN certbot-dns-dnsmadeeasy
-#RUN certbot-dns-gehirn
-#RUN certbot-dns-google
-#RUN certbot-dns-linode
-#RUN certbot-dns-luadns
-#RUN certbot-dns-nsone
-#RUN certbot-dns-ovh
-#RUN certbot-dns-rfc2136
-#RUN certbot-dns-route53
-#RUN certbot-dns-sakuracloud
+RUN pip install certbot-dns-cloudxns
+RUN pip install certbot-dns-digitalocean
+RUN pip install certbot-dns-dnsimple
+RUN pip install certbot-dns-dnsmadeeasy
+RUN pip install certbot-dns-gehirn
+RUN pip install certbot-dns-google
+RUN pip install certbot-dns-linode
+RUN pip install certbot-dns-luadns
+RUN pip install certbot-dns-nsone
+RUN pip install certbot-dns-ovh
+RUN pip install certbot-dns-rfc2136
+RUN pip install certbot-dns-route53
+RUN pip install certbot-dns-sakuracloud
 
 ADD crontab /etc/crontabs
 RUN crontab /etc/crontabs/crontab

@@ -37,7 +37,7 @@ The following volumes of interest can be mounted on the docker host or as docker
 
 #### Environment variables:
 - **WEBROOT** : (optional) path to the host's web server root. If provided, letsencrypt will use the given existing web server to request and validate the certificates. If not provided, letsencrypt will launch it's own web server for this purpose
-- **PLUGIN** : (optional, defaults to `standalone`) A `certbot` plugin to use (e.g. `manual`)
+- **PLUGIN** : (optional, defaults to `standalone`) A `certbot` plugin to use (e.g. `manual`). A list of installed plugins can be found in the `Dockerfile`
 - **PREFERRED_CHALLENGES** : (optional, defaults to http-01) A sorted, comma delimited list of the preferred challenge to use during authorization with the most preferred challenge listed first (eg. "dns-01" or "tls-alpn-01,http-01,..").
 - **CUSTOM_ARGS** : (optional) Additional `certbot` command-line options (e.g. `--redirect`), refer to certbot [documentation](https://certbot.eff.org/docs/using.html#certbot-command-line-options)
 - **LOGFILE** : (optional) path of a file where to write the logs from the certificate request/renewal script. When not provided both stdout/stderr are directed to console which is convenient when using a docker log driver
