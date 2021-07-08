@@ -42,7 +42,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/${{ env.GITHUB_REPOSITORY }}
+            ghcr.io/${{ GITHUB_REPOSITORY }}
           flavor: |
             latest=true
           # generate Docker tags based on the following events/attributes
