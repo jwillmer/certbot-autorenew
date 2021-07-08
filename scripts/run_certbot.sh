@@ -97,7 +97,7 @@ processCertificates() {
         issueCertificate "${domains}"
 
         if [ $? -ne 0 ]; then
-          logger_error "Failed to renew certificate! check /var/log/letsencrypt/letsencrypt.log!"
+          logger_error "Failed to renew certificate! check the logfile for details!"
           exitcode=1
         else
           logger_info "Renewed certificate for ${subject}"
