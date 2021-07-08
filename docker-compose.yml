@@ -5,6 +5,7 @@ services:
   # cloudflare configuration
   certbot:
     build: .
+    image: ghcr.io/jwillmer/certbot-autorenew:latest
     container_name: certbot
     volumes:
       - ~/certificates:/certs

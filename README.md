@@ -1,6 +1,6 @@
-## letsencrypt-autorenewal-docker
+## Certbot Auto Renewal
 
-Available on dockerhub [here]( https://hub.docker.com/r/pschichtel/letsencrypt-autorenew).
+**Available as docker image on [GitHub Package Registry](https://github.com/jwillmer/certbot-autorenew/pkgs/container/certbot-autorenew).**
 
 This image runs [`certbot`](https://certbot.eff.org/) under the hood to automate issuance and renewal of letsencrypt certificates.
 
@@ -21,7 +21,7 @@ Issued certificates are made available in the container's `/certs` directory whi
 #### Build or fetch the docker image
 
 - Either build image with provided docker file
-- -or- fetch the image from dockerhub located at [`ebarault/letsencrypt-autorenew-docker`](https://hub.docker.com/r/pschichtel/letsencrypt-autorenew-docker/tags/)
+- -or- fetch the image from GitHub registry at [`ghcr.io/jwillmer/certbot-autorenew:latest`](https://github.com/jwillmer/certbot-autorenew/pkgs/container/certbot-autorenew)
 
 #### Ports
 The software in the docker container exposes internally the `443` port, which you should expose back on the docker host with no translation, such as in `"443:443"`
@@ -54,7 +54,7 @@ The following volumes of interest can be mounted on the docker host or as docker
 - **PPID** : (optional) Set process ID
 
 #### Example
-As in the provided `docker-compose.yml` file, the expected configuration should look similar to this:
+In the `docker-compose.yml` file is an example to use the image with the cloudflare plugin. The below code is the minimal configuration for this image:
 
 ```yml
 version: '2'
@@ -62,24 +62,18 @@ version: '2'
 services:
   certbot:
     build: .
-    # image: ebarault/letsencrypt-autorenew-docker:latest
+    image: ghcr.io/jwillmer/certbot-autorenew:latest
     container_name: certbot
-    ports:
-      - "443:443"
     volumes:
-      - ./certs:/certs
-      - ./letsencrypt:/etc/letsencrypt
-      - ./var_log_letsencrypt:/var/log/letsencrypt
-    restart: always
+      - ~/certificates:/certs
+      - ~/certbot/logs:/var/log/letsencrypt
     environment:
-      # - WEBROOT=/path/to/web_root
       - LOGFILE=/var/log/letsencrypt/certrenewal.log
-      - DEBUG=false
-      - STAGING=false
-      - DOMAINS=my.domain.com
-      - EMAIL=user@my.domain.com
-      - CONCAT=false
-      - HEALTH_CHECK_URL=my.domain.com:80
+      - RUN_AT_START=true
+      - DOMAINS=*.test.example.com
+      - EMAIL=info@example.com
+      - DEBUG=true
+      - STAGING=true
 ```
 
 ### Docker Logs
