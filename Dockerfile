@@ -4,7 +4,7 @@ LABEL maintainer="Jens Willmer <info@jwillmer.de>"
 
 RUN apk add --no-cache docker-cli curl
 
-# Supported Plugins
+# Supported Plugins: https://certbot.eff.org/docs/using.html#dns-plugins
 RUN pip install certbot-dns-cloudflare
 RUN pip install certbot-dns-cloudxns
 RUN pip install certbot-dns-digitalocean
