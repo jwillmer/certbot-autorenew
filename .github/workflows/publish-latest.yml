@@ -42,14 +42,14 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            jwillmer/certbot-autorenew/certbot-autorenew
+            ghcr.io/${{ env.REPOSITORY }}
           flavor: |
             latest=true
           # generate Docker tags based on the following events/attributes
           tags: |
             type=sha
 
-      - name: Login to DockerHub
+      - name: Login to GitHub registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -68,7 +68,15 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
